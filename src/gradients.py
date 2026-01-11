@@ -1,4 +1,5 @@
 import torch
+from torch.optim import AdamW
 import json
 import os
 from tqdm import tqdm
@@ -30,6 +31,44 @@ class GradientExtractor:
         torch.manual.seed(123)
         total_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
         self.proj_matrix = torch.randn(total_params, projection_dim, device=self.device)
+    
+    def finetune_subset(self, training_data, target_texts, epochs=3):
+        """
+        Fine-tunes the LoRA adapters on 'training_data' and measures loss on 'target_texts'.
+        """
+        # 1. Prepare Target Data (for evaluation)
+        target_inputs = self.tokenizer(target_texts, return_tensors="pt", padding=True, truncation=True, max_length=512).to(self.device)
+
+        # 2. Fine-tuning
+        self.model.train()
+        optimizer = AdamW(self.model.parameters(), lr=5e-05)
+
+        for epoch in range(epochs):
+            train_inputs = self.tokenizer(training_data, return_tensors="pt", padding=True, 
+                                        truncation=True, max_length=512).to(self.device)
+            
+            optimizer.zero_grad()
+            outputs = self.model(**train_inputs, labels=train_inputs["input_ids"])
+            loss = outputs.loss
+            loss.backward()
+            optimizer.step()
+        
+        # 3. Evaluation (Post training loss on target)
+        self.model.eval()
+        with torch.no_grad():
+            target_outputs = self.model(**target_inputs, labels=target_inputs["input_ids"])
+            final_loss = target_outputs.loss.item()
+
+        for layer in self.model.base_model.modules():
+            if hasattr(layer, 'reset_lora_parameters'):
+                layer.reset_lora_parameters("default")
+        
+        # GPU memory cleanup
+        del optimizer
+        torch.cuda.empty_cache()
+        
+        return final_loss
+
 
     def process_file(self, input_path):
         all_grads = []
