@@ -28,7 +28,7 @@ class DataSelector:
         scores = torch.matmul(self.pool_grads, val_dir)
         return torch.topk(scores, k).indices.cpu().numpy()
 
-    def select_prismatic(self, k, sparsity = 0.5, cluster_ratio=0.1, thres=0.5, num_iters=20):
+    def select_prismatic(self, k, sparsity=0.5, cluster_ratio=0.1, thres=0.5, num_iters=20, method="hard"):
         """
         Prismatic Synthesis:
         Selects k samples by identifying sparse regions in the gradient space.
@@ -46,32 +46,50 @@ class DataSelector:
         pool_grads_norm = F.normalize(self.pool_grads, dim=1)
         sim_with_centroids = torch.matmul(pool_grads_norm, cluster_centroids.T)  # (# samples, # centroids)
         cluster_labels = torch.argmax(sim_with_centroids, dim=-1)
-        small_clusters = ClusterManager.smallest_clusters(cluster_labels, sparsity)
-        small_clusters = torch.tensor(small_clusters, device=cluster_labels.device)
+        if method == "hard":
+            small_clusters = ClusterManager.smallest_clusters(cluster_labels, sparsity)
+            small_clusters = torch.tensor(small_clusters, device=cluster_labels.device)
 
-        is_sparse = torch.isin(cluster_labels, small_clusters)
-        sparse_ids = torch.where(is_sparse)[0]
+            is_sparse = torch.isin(cluster_labels, small_clusters)
+            sparse_ids = torch.where(is_sparse)[0]
 
-        if len(sparse_ids) >= k:
-            perm = torch.randperm(len(sparse_ids))[:k]
-            return sparse_ids[perm].cpu().numpy()
-        else:
-            print(f"Warning: Only found {len(sparse_ids)} sparse samples. Returning all.")
-            return sparse_ids.cpu().numpy()
+            if len(sparse_ids) >= k:
+                perm = torch.randperm(len(sparse_ids))[:k]
+                return sparse_ids[perm].cpu().numpy()
+            else:
+                print(f"Warning: Only found {len(sparse_ids)} sparse samples. Returning all.")
+                return sparse_ids.cpu().numpy()
 
-def run_selection_experiment(k=500):
-    pool_path = "data/processed/candidate_pool.jsonl"
-    val_path = "data/processed/val_set.jsonl"
-    selector = DataSelector("data/features/pool_grads.pt", "data/features/val_grads.pt")
+        if method == "soft":
+            # Sample with probability proportional to 1 / cluster_size
+            labels_cpu = cluster_labels.detach().cpu().numpy()
+            counts = np.bincount(labels_cpu, minlength=int(cluster_labels.max().item()) + 1)
+            inv_counts = 1.0 / np.maximum(counts, 1)
+            probs = inv_counts[labels_cpu]
+            probs = probs / probs.sum()
+            return np.random.choice(self.n_pool, k, replace=False, p=probs)
+
+        raise ValueError(f"Unknown method: {method}. Use 'hard' or 'soft'.")
+
+def run_selection_experiment(
+    k=2000,
+    pool_path="data/processed/candidate_pool.jsonl",
+    val_path="data/processed/val_set.jsonl",
+    pool_grads_path="data/features/pool_grads.pt",
+    val_grads_path="data/features/val_grads.pt",
+    out_dir="data/selected_indices",
+):
+    selector = DataSelector(pool_grads_path, val_grads_path)
     
     methods = {
         "random": selector.select_random,
         "less": selector.select_less,
         "prismatic": selector.select_prismatic,
+        "prismatic_soft": lambda k: selector.select_prismatic(k, method="soft"),
         "dsir": lambda k: select_dsir(pool_path, val_path, k)
     }
     
-    results_dir = "data/selected_indices"
+    results_dir = out_dir
     os.makedirs(results_dir, exist_ok=True)
     
     for name, func in methods.items():
@@ -81,7 +99,7 @@ def run_selection_experiment(k=500):
         
         # Evaluation helper: Check contamination rate
         # Load pool to check 'is_contaminated' flag
-        with open("data/processed/candidate_pool.jsonl", "r") as f:
+        with open(pool_path, "r") as f:
             pool = [json.loads(line) for line in f]
         
         selected_data = [pool[i] for i in indices]
@@ -90,4 +108,20 @@ def run_selection_experiment(k=500):
         print(f"Result: {name} selected {noise_count}/{len(indices)} contaminated samples ({(noise_count/denom)*100:.1f}%)")
 
 if __name__ == "__main__":
-    run_selection_experiment(k=500)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--k", type=int, default=2000)
+    parser.add_argument("--pool-path", type=str, default="data/processed/candidate_pool.jsonl")
+    parser.add_argument("--val-path", type=str, default="data/processed/val_set.jsonl")
+    parser.add_argument("--pool-grads", type=str, default="data/features/pool_grads.pt")
+    parser.add_argument("--val-grads", type=str, default="data/features/val_grads.pt")
+    parser.add_argument("--out-dir", type=str, default="data/selected_indices")
+    args = parser.parse_args()
+    run_selection_experiment(
+        k=args.k,
+        pool_path=args.pool_path,
+        val_path=args.val_path,
+        pool_grads_path=args.pool_grads,
+        val_grads_path=args.val_grads,
+        out_dir=args.out_dir,
+    )

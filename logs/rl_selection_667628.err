@@ -1,0 +1,70 @@
+/home/yeojinjung/rl-synthetic-data/scripts/2_selectors.py:12: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.pool_grads = torch.load(pool_grads_path).to(self.device)
+/home/yeojinjung/rl-synthetic-data/scripts/2_selectors.py:13: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.val_grads = torch.load(val_grads_path).to(self.device)
+Cluster-Kmeans:   0%|          | 0/20 [00:00<?, ?it/s]Cluster-Kmeans:   5%|▌         | 1/20 [00:01<00:20,  1.08s/it]Cluster-Kmeans:  20%|██        | 4/20 [00:01<00:03,  4.15it/s]Cluster-Kmeans:  35%|███▌      | 7/20 [00:01<00:01,  7.39it/s]Cluster-Kmeans:  50%|█████     | 10/20 [00:01<00:00, 10.40it/s]Cluster-Kmeans:  65%|██████▌   | 13/20 [00:01<00:00, 12.99it/s]Cluster-Kmeans:  80%|████████  | 16/20 [00:01<00:00, 15.26it/s]Cluster-Kmeans:  95%|█████████▌| 19/20 [00:01<00:00, 17.09it/s]Cluster-Kmeans: 100%|██████████| 20/20 [00:01<00:00, 10.34it/s]
+
+real	0m10.588s
+user	0m5.092s
+sys	0m1.196s
+Traceback (most recent call last):
+  File "/home/yeojinjung/rl-synthetic-data/scripts/3_train_student.py", line 7, in <module>
+    from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+ImportError: cannot import name 'DataCollatorForCompletionOnlyLM' from 'trl' (/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/trl/__init__.py)
+
+real	0m21.989s
+user	0m3.501s
+sys	0m1.376s
+Traceback (most recent call last):
+  File "/home/yeojinjung/rl-synthetic-data/scripts/3_train_student.py", line 7, in <module>
+    from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+ImportError: cannot import name 'DataCollatorForCompletionOnlyLM' from 'trl' (/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/trl/__init__.py)
+
+real	0m4.882s
+user	0m3.269s
+sys	0m0.929s
+Traceback (most recent call last):
+  File "/home/yeojinjung/rl-synthetic-data/scripts/3_train_student.py", line 7, in <module>
+    from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+ImportError: cannot import name 'DataCollatorForCompletionOnlyLM' from 'trl' (/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/trl/__init__.py)
+
+real	0m4.853s
+user	0m3.258s
+sys	0m0.918s
+Traceback (most recent call last):
+  File "/home/yeojinjung/rl-synthetic-data/scripts/3_train_student.py", line 7, in <module>
+    from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+ImportError: cannot import name 'DataCollatorForCompletionOnlyLM' from 'trl' (/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/trl/__init__.py)
+
+real	0m5.003s
+user	0m3.222s
+sys	0m0.998s
+`torch_dtype` is deprecated! Use `dtype` instead!
+Traceback (most recent call last):
+  File "/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/peft/config.py", line 317, in _get_peft_type
+    config_file = hf_hub_download(
+                  ^^^^^^^^^^^^^^^^
+  File "/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': './models/final-random'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yeojinjung/rl-synthetic-data/scripts/4_evaluate.py", line 97, in <module>
+    main()
+  File "/home/yeojinjung/rl-synthetic-data/scripts/4_evaluate.py", line 74, in main
+    model = PeftModel.from_pretrained(base, f"./models/final-{method}")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/peft/peft_model.py", line 459, in from_pretrained
+    config = PEFT_TYPE_TO_CONFIG_MAPPING[PeftConfig._get_peft_type(model_id, **hf_kwargs)].from_pretrained(
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/yeojinjung/micromamba/envs/rl-synth/lib/python3.11/site-packages/peft/config.py", line 323, in _get_peft_type
+    raise ValueError(f"Can't find '{CONFIG_NAME}' at '{model_id}'")
+ValueError: Can't find 'adapter_config.json' at './models/final-random'
+
+real	0m5.670s
+user	0m3.266s
+sys	0m1.425s

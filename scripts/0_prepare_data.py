@@ -9,7 +9,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Prepare Perturbed MATH/GSM8K data.")
     parser.add_argument("--contamination_level", type=float, default=0.1, help="Fraction of pool to corrupt.")
     parser.add_argument("--perturbation_prob", type=float, default=0.0, help="Probability of changing numbers in a sample (for robustness).")
-    parser.add_argument("--pool_size", type=int, default=5000)
+    parser.add_argument("--pool_size", type=int, default=7000)
     parser.add_argument("--target_size", type=int, default=500)
     parser.add_argument("--val_size", type=int, default=500)
     parser.add_argument("--seed", type=int, default=124)
@@ -69,8 +69,13 @@ def prepare_data():
 
     # Split dataset into clean Validation and Target and noisy Candidate
     pool_data = full_data[:args.pool_size]
-    val_data = full_data[args.pool_size : args.pool_size+args.val_size]
-    target_data = full_data[args.pool_size+args.val_size : args.pool_size+args.val_size+args.target_size]
+    val_data = full_data[args.pool_size : args.pool_size + args.val_size]
+    if args.target_size <= 0:
+        target_data = full_data[args.pool_size + args.val_size :]
+    else:
+        target_data = full_data[
+            args.pool_size + args.val_size : args.pool_size + args.val_size + args.target_size
+        ]
 
     print(f"Injecting {args.contamination_level*100}% semantic noise into pool...")
     noisy_pool = apply_semantic_noise(pool_data, args.contamination_level)

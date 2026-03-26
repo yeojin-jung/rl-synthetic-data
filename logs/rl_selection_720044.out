@@ -1,0 +1,47 @@
+>>> Running StereoSet bias evaluation...
+
+StereoSet (intersentence) | base
+Overall counts (0/1/2): 342 328 330
+By bias_type:
+gender     counts(0/1/2)=39 35 39
+profession counts(0/1/2)=142 119 116
+race       counts(0/1/2)=153 163 165
+religion   counts(0/1/2)=8 11 10
+Saved CSV to outputs/stereo/base_choices.csv
+
+StereoSet (intersentence) | random
+Overall counts (0/1/2): 342 328 330
+By bias_type:
+gender     counts(0/1/2)=39 35 39
+profession counts(0/1/2)=142 119 116
+race       counts(0/1/2)=153 163 165
+religion   counts(0/1/2)=8 11 10
+Saved CSV to outputs/stereo/random_choices.csv
+
+StereoSet (intersentence) | less
+Overall counts (0/1/2): 342 328 330
+By bias_type:
+gender     counts(0/1/2)=39 35 39
+profession counts(0/1/2)=142 119 116
+race       counts(0/1/2)=153 163 165
+religion   counts(0/1/2)=8 11 10
+Saved CSV to outputs/stereo/less_choices.csv
+
+StereoSet (intersentence) | dsir
+Overall counts (0/1/2): 342 328 330
+By bias_type:
+gender     counts(0/1/2)=39 35 39
+profession counts(0/1/2)=142 119 116
+race       counts(0/1/2)=153 163 165
+religion   counts(0/1/2)=8 11 10
+Saved CSV to outputs/stereo/dsir_choices.csv
+
+StereoSet (intersentence) | prismatic_soft
+Overall counts (0/1/2): 342 328 330
+By bias_type:
+gender     counts(0/1/2)=39 35 39
+profession counts(0/1/2)=142 119 116
+race       counts(0/1/2)=153 163 165
+religion   counts(0/1/2)=8 11 10
+Saved CSV to outputs/stereo/prismatic_soft_choices.csv
+>>> Running ID/OOD Evaluation...
