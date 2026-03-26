@@ -1,0 +1,6 @@
+>>> Extracting Gradients (for LESS/Prismatic)...
+Loading Proxy Model: Qwen/Qwen2.5-0.5B-Instruct on cuda
+Total LoRA Parameters: 1081344
+Saved gradients to data/features/pool_grads.pt | Shape: torch.Size([5000, 1024])
+Saved gradients to data/features/val_grads.pt | Shape: torch.Size([500, 1024])
+>>> Running Selection Algorithms (k=500)...

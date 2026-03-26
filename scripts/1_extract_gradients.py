@@ -1,11 +1,16 @@
 import torch
 import json
 import os
+import sys
 import numpy as np
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model
 
+if os.path.exists("data/features/pool_grads.pt"):
+    print(">>> Gradients already exist. Skipping extraction to save 30 mins.")
+    sys.exit(0)
+    
 class GradientExtractor:
     def __init__(self, model_id="Qwen/Qwen2.5-0.5B-Instruct", projection_dim=1024):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -59,7 +64,7 @@ class GradientExtractor:
         grads = []
         for p in self.model.parameters():
             if p.requires_grad and p.grad is not None:
-                grads.append(p.grad.view(-1))
+                grads.append(p.grad.view(-1).detach().to(self.device))
         
         # Flatten and Project
         flat_grads = torch.cat(grads).to(torch.float32) 
@@ -87,18 +92,24 @@ class GradientExtractor:
         print(f"Saved gradients to {output_file} | Shape: {all_grads.shape}")
 
 if __name__ == "__main__":
+    import argparse
     extractor = GradientExtractor()
     
-    data_dir = "data/processed"
-    output_dir = "data/features"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pool-jsonl", type=str, default="data/processed/candidate_pool.jsonl")
+    parser.add_argument("--val-jsonl", type=str, default="data/processed/val_set.jsonl")
+    parser.add_argument("--out-dir", type=str, default="data/features")
+    args = parser.parse_args()
+
+    output_dir = args.out_dir
     os.makedirs(output_dir, exist_ok=True)
 
     # Process both sets
     extractor.process_and_save(
-        f"{data_dir}/candidate_pool.jsonl", 
+        args.pool_jsonl, 
         f"{output_dir}/pool_grads.pt"
     )
     extractor.process_and_save(
-        f"{data_dir}/val_set.jsonl",
+        args.val_jsonl,
         f"{output_dir}/val_grads.pt"
     )

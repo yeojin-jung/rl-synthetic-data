@@ -1,0 +1,34 @@
+{
+    "random": {
+        "ID_External": 15.0,
+        "OOD_Symbolic": 2.0,
+        "G_Vendi": 91.94009399414062,
+        "Influence_Mean": 0.5143818855285645,
+        "Dist_To_Centroid_Mean": 0.48327019810676575,
+        "Length_Bias": 0.025425369101831276
+    },
+    "less": {
+        "ID_External": 11.0,
+        "OOD_Symbolic": 1.0,
+        "G_Vendi": 39.98960876464844,
+        "Influence_Mean": 0.6623061299324036,
+        "Dist_To_Centroid_Mean": 0.3350650370121002,
+        "Length_Bias": 0.06782494428647456
+    },
+    "dsir": {
+        "ID_External": 13.5,
+        "OOD_Symbolic": 3.5000000000000004,
+        "G_Vendi": 77.28440856933594,
+        "Influence_Mean": 0.5444453358650208,
+        "Dist_To_Centroid_Mean": 0.45320525765419006,
+        "Length_Bias": -0.14427236979506436
+    },
+    "prismatic_soft": {
+        "ID_External": 9.0,
+        "OOD_Symbolic": 4.5,
+        "G_Vendi": 112.31643676757812,
+        "Influence_Mean": 0.47751685976982117,
+        "Dist_To_Centroid_Mean": 0.5202683210372925,
+        "Length_Bias": -0.05442809747213052
+    }
+}
